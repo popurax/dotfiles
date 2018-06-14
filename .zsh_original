@@ -1,0 +1,231 @@
+## http://itchyny.hatenablog.com/entry/20130227/1361933011
+function extract() {
+  case $1 in
+    *.tar.gz|*.tgz) tar xzvf $1;;
+    *.tar.xz) tar Jxvf $1;;
+    *.zip) unzip $1;;
+    *.lzh) lha e $1;;
+    *.tar.bz2|*.tbz) tar xjvf $1;;
+    *.tar.Z) tar zxvf $1;;
+    *.gz) gzip -d $1;;
+    *.bz2) bzip2 -dc $1;;
+    *.Z) uncompress $1;;
+    *.tar) tar xvf $1;;
+    *.arj) unarj $1;;
+    *.jar) java -jar $1;;
+    *.jpg|*.png|*.gif|*.svg) gnome-open $1;;
+    *.md) haroopad $1;;
+    *.7z) unar $1;;
+  esac
+}
+alias -s {gz,tgz,zip,lzh,bz2,tbz,Z,tar,arj,xz,jar,7z}=extract
+alias -s {jpg,png,gif,svg}=extract
+alias -s md=extract
+
+##画像ファイルは全部gnome-openで開くつもりだったが、fileのhelpが出るだけで何もしない。
+#function content_open(){
+#	if (file $@ | grep 'image' 1>/dev/null 2>/dev/null) ; 
+#	then
+#		gnome-open $@
+#	else
+#		extract
+#	fi
+#}
+#command_not_found_handler(){
+#	content_open
+#}
+
+## 環境変数
+export PATH=$HOME/AndroidTV_WiFi_ko/CrossCompile/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin:$PATH
+#export ARCH=arm64
+#export CROSS_COMPILE=aarch64-linux-android-
+
+export PATH=$PATH:$HOME/bin:/opt/bin:~/.go/bin
+export HISTSIZE=50000
+export SAVEHIST=50000
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/ALE/
+export CC="ccache gcc"
+export CXX="ccache g++"
+export XDG_CONFIG_HOME=$XDG_CONFIG_HOME:~/.config
+#export http_proxy="http://172.16.40.1:8888" https_proxy="https://172.16.40.1:8888"
+
+
+## 実行したプロセスの消費時間が3秒以上かかったら
+## 自動的に消費時間の統計情報を表示する。
+REPORTTIME=3
+
+## エイリアス
+alias -s pdf=evince
+alias py=python3
+alias sudo='sudo -E'
+alias vim=nvim
+alias grep="egrep --text"	# [-a][--binary-files=text]でも可
+#alias ipa='paste -d "\n" <(ip a | grep "^[1-9]:") <(ip a | grep inet)'
+alias ipa="ip -4 -c -h addr"
+alias lsls="ls **/*"
+alias od="hd"
+alias ping="hping3 -1" 
+alias cp="cp --reflink=auto"	# BtrfsのCoWを使って爆速化
+alias unxy="unset http{,s}_proxy"
+alias rm="trash-put"
+
+## オリジナル
+#trap 'echo 諦めた。' 2
+#setxkbmap -variant qwerty
+#while true
+#do 
+#	[[ `date +%M ` -eq 00 ]] && echo -e "\n\n`date +%p%-I`時。勉強で疲れた。明日から本気出す。\n\n" ; sleep 60
+#	sleep 60
+#done &
+
+## pyenv
+#export PATH="$HOME/.anyenv/bin:$PATH"
+#eval "$(anyenv init -)"
+
+## switching langage
+case $TERM in
+linux)
+    export LANG=C ;;
+*)
+    export LANG=ja_JP.UTF-8 ;;
+esac
+
+## Tab補完を豪華にする
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*' format '%B%d%b'
+zstyle ':completion:*:warnings' format 'No matches for: %d'
+zstyle ':completion:*' group-name ''
+
+## Tab補完に色をつける
+export LSCOLORS=Exfxcxdxbxegedabagacad	# 色の設定	
+export LS_COLORS='di=01;34:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'	# 補完時の色の設定
+export ZLS_COLORS=$LS_COLOR	# ZLS_COLORSとは？S
+export CLICOLOR=tru	# lsコマンド時、自動で色がつく(ls -Gのようなもの？)e
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}	# 補完候補に色を付ける
+
+## お手製関数
+function col {
+  awk -v col=$1 '{print $col}'
+}
+
+function sr {
+    find . -type f -exec sed -i '' s/$1/$2/g {} +
+}
+
+		# https://github.com/huyng/bashmarks
+		# USAGE:
+		# s bookmarkname - saves the curr dir as bookmarkname
+		# j bookmarkname - jumps to the that bookmark
+		# j b[TAB] - tab completion is available
+		# b - list all bookmarks
+		
+		# save current directory to bookmarks
+		touch ~/.sdirs
+		function s {
+		  cat ~/.sdirs | grep -v "export DIR_$1=" > ~/.sdirs1
+		  mv ~/.sdirs1 ~/.sdirs
+		  CURDIR=$(echo $PWD| sed "s#^$HOME#\$HOME#g")
+		  echo "export DIR_$1=$CURDIR" >> ~/.sdirs
+		}
+		
+		# jump to bookmark
+		function j {
+		  source ~/.sdirs
+		  cd $(eval $(echo echo $(echo \$DIR_$1)))
+		}
+		
+		# list bookmarks with dirname
+		function b {
+		  source ~/.sdirs
+		  env | grep "^DIR_" | cut -c5- | grep "^.*="
+		}
+		# list bookmarks without dirname
+		function _b {
+		  source ~/.sdirs
+		  env | grep "^DIR_" | cut -c5- | grep "^.*=" | cut -f1 -d "="
+		}
+
+		function d {
+		      t=$(mktemp -t bashmarks.XXXXXX) || exit 1
+		      sed "/$1/d" "$HOME/.sdirs" > $t
+		      mv "$t" ~/.sdirs
+		      unset "DIR_$1"
+		}
+		
+		# completion command for g
+		function _gcomp {
+		    local curw
+		    COMPREPLY=()
+		    curw=${COMP_WORDS[COMP_CWORD]}
+		    COMPREPLY=($(compgen -W '`_l`' -- $curw))
+		    return 0
+		}
+		
+		## bind completion command for g to _gcomp
+		#complete -F _gcomp g
+
+#animation(){
+#s="\033[s"
+#u="\033[u"
+#pos="\033[1000D\033[$[`tput cols`-10]C"
+#
+#while :
+#do
+#	eval echo -ne '${s}${pos}\(´・ω・｀\)${u}'
+#	sleep 0.3
+#	eval echo -ne '${s}${pos}\(　´・ω・\)${u}'
+#	sleep 0.3
+#	eval echo -ne '${s}${pos}\(　　´・ω\)${u}'
+#	sleep 0.3
+#	eval echo -ne '${s}${pos}\(　　 ´・\)${u}'
+#	sleep 0.3
+#	eval echo -ne '${s}${pos}\(　　　 ´\)${u}'
+#	sleep 0.3
+#	eval echo -ne '${s}${pos}\(　　　　\)${u}'
+#	sleep 0.3
+#	eval echo -ne '${s}${pos}\(｀　　　\)${u}'
+#	sleep 0.3
+#	eval echo -ne '${s}${pos}\(・｀　　\)${u}'
+#	sleep 0.3
+#	eval echo -ne '${s}${pos}\(ω・｀　 \)${u}'
+#	sleep 0.3
+#	eval echo -ne '${s}${pos}\(・ω・｀ \)${u}'
+#	sleep 0.3
+#done
+#}
+#animation &
+
+#animation(){
+#touch /tmp/emoji_number
+#count=`cat /tmp/emoji_number`
+#case "$count" in
+#	"")	echo '(´・ω・｀)';;
+#	1)	echo '(　´・ω・)';;
+#	2)	echo '(　　´・ω)';;
+#	3)	echo '(　　 ´・)';;
+#	4)	echo '(　　　 ´)';;
+#	5)	echo '(　　　　)';;
+#	6)	echo '(｀　　　)';;
+#	7)	echo '(・｀　　)';;
+#	8)	echo '(ω・｀　 )';;
+#	9)	echo '(・ω・｀ )';;
+#esac
+#echo $((count++)) > /tmp/emoji_number
+#}
+#
+#TMOUT=3
+#TRPALRM(){
+#zle reset-prompt
+#}
+#
+#RPROMPT="$(animation)"
+
+#apid=$!
+#trap "kill stop $apid" DEBUG
+#trap DEBUG
+
+# add this configuration to ~/.zshrc
+export HISTFILE=~/.zsh_history  # ensure history file visibility
+export HH_CONFIG=hicolor        # get more colors
+bindkey -s "\C-r" "\eqhh\n"     # bind hh to Ctrl-r (for Vi mode check doc)
+

@@ -5,6 +5,7 @@ from collections import defaultdict
 import os
 from os import path
 
+
 messageFormat = "[%(who)s %(count)s回目] %(message)s"
 formatter = logging.Formatter(messageFormat)
 stdHandler = logging.StreamHandler()
@@ -50,6 +51,8 @@ def main():
         shellScripts = [i for i in files if not i.split(".")[-1] == "ps1"]
         for i in shellScripts:
             os.symlink(path.join(currentDir, i), path.join(pathProfile, i))
+    else:
+        pass
 
 
 if __name__ == "__main__":

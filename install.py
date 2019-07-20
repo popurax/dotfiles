@@ -9,7 +9,7 @@ messageFormat = "[%(who)s %(count)s回目] %(message)s"
 formatter = logging.Formatter(messageFormat)
 stdHandler = logging.StreamHandler()
 stdHandler.setFormatter(formatter)
-logging.basicConfig(level=logging.DEBUG, handlers=[stdHandler])
+logging.basicConfig(level=logging.INFO, handlers=[stdHandler])
 class ExtensionLogRecord(logging.LogRecord):
         counts = defaultdict(int)
         def __init__(self, *args, **kwargs):

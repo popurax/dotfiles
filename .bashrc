@@ -198,7 +198,3 @@ cd_func ()
 alias cd=cd_func
 
 ## ORIGINAL
-sdk="C:\Users\t_arakaki\ET_Robocon\opt\ev3rt\hrp2\sdk"
-dpy="/cygdrive/d/ev3rt/apps/"
-tech1="C:\Users\t_arakaki\Documents\ET_Robocon\【技術教育】「要素技術とモデルを開発に使おう」資料"
-uml="/cygdrive/c/Users/t_arakaki/Desktop/beginners"

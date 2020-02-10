@@ -1,21 +1,23 @@
+#!/usr/bin/env zsh
+
 ## http://itchyny.hatenablog.com/entry/20130227/1361933011
 function extract() {
-  case $1 in
-    *.tar.gz|*.tgz) tar xzvf $1;;
-    *.tar.xz) tar Jxvf $1;;
-    *.zip) unzip $1;;
-    *.lzh) lha e $1;;
-    *.tar.bz2|*.tbz) tar xjvf $1;;
-    *.tar.Z) tar zxvf $1;;
-    *.gz) gzip -d $1;;
-    *.bz2) bzip2 -dc $1;;
-    *.Z) uncompress $1;;
-    *.tar) tar xvf $1;;
-    *.arj) unarj $1;;
-    *.jar) java -jar $1;;
-    *.jpg|*.png|*.gif|*.svg) gnome-open $1;;
-    *.md) haroopad $1;;
-    *.7z) unar $1;;
+  case  in
+    *.tar.gz|*.tgz) tar xzvf ;;
+    *.tar.xz) tar Jxvf ;;
+    *.zip) unzip ;;
+    *.lzh) lha e ;;
+    *.tar.bz2|*.tbz) tar xjvf ;;
+    *.tar.Z) tar zxvf ;;
+    *.gz) gzip -d ;;
+    *.bz2) bzip2 -dc ;;
+    *.Z) uncompress ;;
+    *.tar) tar xvf ;;
+    *.arj) unarj ;;
+    *.jar) java -jar ;;
+    *.jpg|*.png|*.gif|*.svg) gnome-open ;;
+    *.md) haroopad ;;
+    *.7z) unar ;;
   esac
 }
 alias -s {gz,tgz,zip,lzh,bz2,tbz,Z,tar,arj,xz,jar,7z}=extract
@@ -105,11 +107,11 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}	# 補完候補に�
 
 ## お手製関数
 function col {
-  awk -v col=$1 '{print $col}'
+  awk -v col= '{print $col}'
 }
 
 function sr {
-    find . -type f -exec sed -i '' s/$1/$2/g {} +
+    find . -type f -exec sed -i '' s///g {} +
 }
 
 		# https://github.com/huyng/bashmarks
@@ -122,16 +124,16 @@ function sr {
 		# save current directory to bookmarks
 		touch ~/.sdirs
 		function s {
-		  cat ~/.sdirs | grep -v "export DIR_$1=" > ~/.sdirs1
+		  cat ~/.sdirs | grep -v "export DIR_=" > ~/.sdirs1
 		  mv ~/.sdirs1 ~/.sdirs
 		  CURDIR=$(echo $PWD| sed "s#^$HOME#\$HOME#g")
-		  echo "export DIR_$1=$CURDIR" >> ~/.sdirs
+		  echo "export DIR_=$CURDIR" >> ~/.sdirs
 		}
 		
 		# jump to bookmark
 		function j {
 		  source ~/.sdirs
-		  cd $(eval $(echo echo $(echo \$DIR_$1)))
+		  cd $(eval $(echo echo $(echo \$DIR_)))
 		}
 		
 		# list bookmarks with dirname
@@ -147,9 +149,9 @@ function sr {
 
 		function d {
 		      t=$(mktemp -t bashmarks.XXXXXX) || exit 1
-		      sed "/$1/d" "$HOME/.sdirs" > $t
+		      sed "//d" "$HOME/.sdirs" > $t
 		      mv "$t" ~/.sdirs
-		      unset "DIR_$1"
+		      unset "DIR_"
 		}
 		
 		# completion command for g

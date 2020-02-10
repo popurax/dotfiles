@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 # （文字列にしてeval関数で実行する方法もあるが、補完やIDEアシスト機能が効かなくなるので使いたくない。）
 targetFiles = [
     {
-        'fileName': 'javascript.json', 
+        'fileName': 'javascript.code-snippets', 
         'windowsPathDir': lambda: os.environ["USERPROFILE"] + "\\AppData\\Roaming\\Code\\User\\snippets"
     },
     {

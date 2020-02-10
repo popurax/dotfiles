@@ -30,6 +30,10 @@ targetFiles = [
         'windowsPathDir': lambda: os.environ["USERPROFILE"] + "\\AppData\\Roaming\\Code\\User\\snippets"
     },
     {
+        'fileName': 'typescript.json', 
+        'windowsPathDir': lambda: os.environ["USERPROFILE"] + "\\AppData\\Roaming\\Code\\User\\snippets"
+    },
+    {
         'fileName': 'Microsoft.PowerShell_profile.ps1', 
         'windowsPathDir': lambda: os.environ["USERPROFILE"] + "\\Documents\\WindowsPowerShell"
     },

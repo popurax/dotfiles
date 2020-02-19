@@ -15,11 +15,20 @@
 	"リストオブジェクトから値の種類を列挙したリストを生成": {
 		"description": "TypeScriptのオブジェクトの型を作る時とかで、あるキーにどんな値が入るかが分かるので、「status:Stringではなく、status:'ENABLE'|'DISABLE'の詳細型を定義する」という事がしやすくなる。",
 		"prefix": "liob2enum",
-		"body": [
-			"const listObject = [{hoge:1, status:'DISABLED'},{hoge:2, status:'ENABLED'}]",
-			"const targetKeys = Object.keys(listObject[0])",
-			"// @ts-ignore",
-			"const keyEnums = targetKeys.map(k => ({ [k]: Object.keys(R.groupBy(R.prop(k), listObject)) }))",
+		"body": [    
+			"const listObject = n",
+			"const targetKeys = Object.entries(listObject[0])",
+			"const recursive = (listObject, targetKeys) => {",
+				"return targetKeys.map(([k, v]) => {",
+					"if (v instanceof Object) {",
+						"return { [k]: recursive(listObject.map(n => n[k]), Object.entries(v)) }",
+					"}",
+					"// @ts-ignore",
+					"return { [k]: R.pipe(R.groupBy(n => n[k]), Object.keys)(listObject) }",
+				"})",
+			"}",
+			"const keyEnums = recursive(listObject, targetKeys)",
+			"console.log(JSON.stringify(keyEnums, null, '\t'))",
 		]
 	}
 }

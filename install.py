@@ -4,6 +4,7 @@ import logging
 from collections import defaultdict
 import os
 import enum
+import subprocess
 
 messageFormat = "[%(who)s %(count)s回目] %(message)s"
 formatter = logging.Formatter(messageFormat)
@@ -38,6 +39,13 @@ targetFiles = [
         'windowsPathDir': lambda: os.environ["USERPROFILE"] + "\\Documents\\WindowsPowerShell"
     },
     {
+        'fileName': 'vscode_extensions',
+        # 'windowsCommand': lambda: subprocess.run(["code","--list-extensions"], stdout=open("vscode_extensions", mode='w'), stderr=subprocess.STDOUT, shell=True)
+        'windowsCommand': lambda: with open("vscode_extensions", mode='r') as f:
+            for i in f:
+                subprocess.run(["code","--install-extension", i], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+    }
+    {
         'fileName': '.bashrc_aliases',
         'linuxPathDir': lambda: os.environ["HOME"]
     },
@@ -53,17 +61,18 @@ def main():
     if(pf == 'Windows'):
         # windTargetDir = [n for n in targetFiles if n.get('windowsPathDir') is not None]
         for n in targetFiles:
-            getPath = n.get('windowsPathDir')
-            isExistAttribute = getPath is not None
-            if (not isExistAttribute):
-                continue
-            path = getPath()
-            fileName = n.get('fileName')
-            # 大半のWin環境はプロファイルディレクトリが無い。無ければ作る。
-            if not os.path.isdir(path):
-                os.mkdir(path)
-            log.debug(currentDir)
-            os.symlink(os.path.join(currentDir, fileName), os.path.join(path, fileName))
+            if (n.get('windowsCommand') is not None):
+                n.get('windowsCommand')()
+                log.debug('windowsCommand OK')
+            elif (n.get('windowsPathDir') is not None):
+                getPath = n.get('windowsPathDir')
+                path = getPath()
+                fileName = n.get('fileName')
+                # 大半のWin環境はプロファイルディレクトリが無い。無ければ作る。
+                if not os.path.isdir(path):
+                    os.mkdir(path)
+                log.debug(currentDir)
+                os.symlink(os.path.join(currentDir, fileName), os.path.join(path, fileName))
     elif(pf == 'Linux'):
         for n in targetFiles:
             getPath = n.get('linuxPathDir')

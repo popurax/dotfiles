@@ -40,7 +40,6 @@ targetFiles = [
     },
     {
         'fileName': 'vscode_extensions',
-        # 'windowsCommand': lambda: subprocess.run(["code","--list-extensions"], stdout=open("vscode_extensions", mode='w'), stderr=subprocess.STDOUT, shell=True)
         'windowsCommand': lambda: with open("vscode_extensions", mode='r') as f:
             for i in f:
                 subprocess.run(["code","--install-extension", i], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)

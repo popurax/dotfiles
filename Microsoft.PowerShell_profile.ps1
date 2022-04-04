@@ -63,3 +63,6 @@ $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
   Import-Module "$ChocolateyProfile"
 }
+
+# Scoop profile
+fnm env --use-on-cd | Out-String | Invoke-Expression

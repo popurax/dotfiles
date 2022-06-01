@@ -1,4 +1,4 @@
-function Evalate-Process{
+function Invoke-Process{
     $file, [System.Array]$arguments = $args;
     $psi = new-object System.Diagnostics.ProcessStartInfo $file;
     $psi.Arguments = $arguments;
@@ -7,7 +7,7 @@ function Evalate-Process{
     [System.Diagnostics.Process]::Start($psi);
 }
 
-Set-Alias sudof Evalate-Process
+Set-Alias sudof Invoke-Process
 
 
 ##############################

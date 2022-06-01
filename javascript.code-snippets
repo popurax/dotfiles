@@ -106,5 +106,28 @@
         "    }",
         "})",
 		]
+	},
+	"lodashのメモ化ヘルパー": {
+		"scope": "javascript, typescript",
+		"prefix": "lodashMemoize",
+		"description": "",
+		"body": [
+			"// /**",
+			"//  * メモ化処理。",
+			"//  * lodashのmemoize関数を直で利用すると、",
+			"//  * メモ値を際限なく保持してメモリリークの原因になる為、",
+			"//  * 最新1件のみ保存する処理に変えた関数を作成。",
+			"//  */",
+			"export const memoize = (...lodashMemoizeArgs) => {",
+			"// @ts-ignore",
+			"const memoizeFn = _.memoize(...lodashMemoizeArgs)",
+			"const originSet = memoizeFn.cache.set",
+			"memoizeFn.cache.set = function (...args) {",
+			"	memoizeFn.cache.clear()",
+			"	return originSet.bind(this)(...args)",
+			"}",
+			"return memoizeFn",
+			"}",
+		]
 	}
 }

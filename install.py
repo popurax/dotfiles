@@ -39,12 +39,6 @@ targetFiles = [
         'windowsPathDir': lambda: os.environ["USERPROFILE"] + "\\Documents\\WindowsPowerShell"
     },
     {
-        'fileName': 'vscode_extensions',
-        'windowsCommand': lambda: with open("vscode_extensions", mode='r') as f:
-            for i in f:
-                subprocess.run(["code","--install-extension", i], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-    }
-    {
         'fileName': '.bashrc_aliases',
         'linuxPathDir': lambda: os.environ["HOME"]
     },

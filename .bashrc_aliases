@@ -30,11 +30,7 @@ export PROMPT_COMMAND="history -a"
 export PATH=$PATH:$HOME/bin
 
 # Aliases
-#
-# Some people use a different file for aliases
-if [ -f "${HOME}/.bash_aliases" ]; then
-  source "${HOME}/.bash_aliases"
-fi
+
 # Interactive operation...
 alias rm='rm -i'
 alias cp='cp -i'
@@ -137,37 +133,135 @@ cd_func ()
 }
 alias cd=cd_func
 
-## ORIGINAL
-
+## オリジナル
 
 ## console AA animation
-animation(){
-s="\033[s"
-u="\033[u"
-pos="\033[1000D\033[$[`tput cols`-10]C"
+## コマンドの邪魔になるので、コメントアウト。
+# animation(){
+# s="\033[s"
+# u="\033[u"
+# pos="\033[1000D\033[$[`tput cols`-10]C"
+#
+# while :
+# do
+# 	eval echo -ne '${s}${pos}\(´・ω・｀\)${u}'
+# 	sleep 0.3
+# 	eval echo -ne '${s}${pos}\(　´・ω・\)${u}'
+# 	sleep 0.3
+# 	eval echo -ne '${s}${pos}\(　　´・ω\)${u}'
+# 	sleep 0.3
+# 	eval echo -ne '${s}${pos}\(　　 ´・\)${u}'
+# 	sleep 0.3
+# 	eval echo -ne '${s}${pos}\(　　　 ´\)${u}'
+# 	sleep 0.3
+# 	eval echo -ne '${s}${pos}\(　　　　\)${u}'
+# 	sleep 0.3
+# 	eval echo -ne '${s}${pos}\(｀　　　\)${u}'
+# 	sleep 0.3
+# 	eval echo -ne '${s}${pos}\(・｀　　\)${u}'
+# 	sleep 0.3
+# 	eval echo -ne '${s}${pos}\(ω・｀　 \)${u}'
+# 	sleep 0.3
+# 	eval echo -ne '${s}${pos}\(・ω・｀ \)${u}'
+# 	sleep 0.3
+# done
+# }
+# animation &
 
-while :
-do
-	eval echo -ne '${s}${pos}\(´・ω・｀\)${u}'
-	sleep 0.3
-	eval echo -ne '${s}${pos}\(　´・ω・\)${u}'
-	sleep 0.3
-	eval echo -ne '${s}${pos}\(　　´・ω\)${u}'
-	sleep 0.3
-	eval echo -ne '${s}${pos}\(　　 ´・\)${u}'
-	sleep 0.3
-	eval echo -ne '${s}${pos}\(　　　 ´\)${u}'
-	sleep 0.3
-	eval echo -ne '${s}${pos}\(　　　　\)${u}'
-	sleep 0.3
-	eval echo -ne '${s}${pos}\(｀　　　\)${u}'
-	sleep 0.3
-	eval echo -ne '${s}${pos}\(・｀　　\)${u}'
-	sleep 0.3
-	eval echo -ne '${s}${pos}\(ω・｀　 \)${u}'
-	sleep 0.3
-	eval echo -ne '${s}${pos}\(・ω・｀ \)${u}'
-	sleep 0.3
-done
-}
-animation &
+
+
+# configファイル作成。（すでにあればエラー出てスキップ）
+mkdir ~/.config &> /dev/null
+
+source <(sed -n -E 's/^\s*(\S+)\s*=\s*(.+)$/\1=\2/p' < ~/.config/dotfiles.ini)
+
+## dsq（SQLでデータ整形できるツール）をインストール
+## インストール状況チェック & インストール可否
+if [[ ! -n "$is_install_dsq" && ! $is_install_dsq = false ]]; then
+  which dsq >/dev/null 2>&1
+  if [ ! $? -eq 0 ]; then
+    echo 'dsq not installed.'
+    read -n1 -p "dsq install now? (y/N): " isYn
+
+    if [[ $isYn = [yY] ]]; then
+      echo "dsq installing..."
+
+      ## インストール方法：https://github.com/multiprocessio/dsq
+      curl -LO "https://github.com/multiprocessio/dsq/releases/download/0.20.2/dsq-$(uname -s | awk '{ print tolower($0) }')-x64-0.20.2.zip"
+      unzip dsq-*-0.20.2.zip
+      sudo mv dsq /usr/local/bin/dsq
+
+      echo "dsq installed."
+    else
+      echo "is_install_dsq=false" >> ~/.config/dotfiles.ini
+      echo "dsq not install."
+    fi
+  fi
+fi
+
+## vnstat（ネットワーク転送量をモニタリング。定期的にDBに永続化）をインストール
+if [[ ! -n "$is_install_vnstat" && ! $is_install_vnstat = false ]]; then
+  which vnstat >/dev/null 2>&1
+  if [ ! $? -eq 0 ]; then
+    echo 'vnstat not installed.'
+    read -n1 -p "vnstat install now? (y/N): " isYn
+
+    if [[ $isYn = [yY] ]]; then
+      echo "vnstat installing..."
+
+      sudo apt update && sudo apt install vnstat
+
+      echo "vnstat installed. \ncommand example `watch -t -n 60 vnstat`."
+    else
+      echo "is_install_vnstat=false" >> ~/.config/dotfiles.ini
+      echo "vnstat not install."
+    fi
+  fi
+fi
+
+
+## asdf（様々なランタイム環境をバージョン管理）をインストール
+## 初期化処理（ここで実行しないとasdfコマンドが読み込まれない）
+. $HOME/.asdf/asdf.sh
+. $HOME/.asdf/completions/asdf.bash
+if [[ ! -n "$is_install_asdf" && ! $is_install_asdf = false ]]; then
+  which asdf >/dev/null 2>&1
+  if [ ! $? -eq 0 ]; then
+    echo 'asdf not installed.'
+    read -n1 -p "asdf install now? (y/N): " isYn
+
+    if [[ $isYn = [yY] ]]; then
+      echo "asdf installing..."
+
+      ## インストール方法：https://asdf-vm.com/guide/getting-started.html
+      sudo apt update && sudo apt install curl git
+      git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.10.0
+
+      echo "asdf installed."
+    else
+      echo "is_install_asdf=false" >> ~/.config/dotfiles.ini
+      echo "asdf not install."
+    fi
+  fi
+fi
+
+## tldr（コマンドの主な利用例がすぐ見れる）をインストール
+if [[ ! -n "$is_install_tldr" && ! $is_install_tldr = false ]]; then
+  which tldr >/dev/null 2>&1
+  if [ ! $? -eq 0 ]; then
+    echo 'tldr not installed.'
+    read -n1 -p "tldr install now? (y/N): " isYn
+
+    if [[ $isYn = [yY] ]]; then
+      echo "tldr installing..."
+
+      ## インストール方法：https://github.com/tldr-pages/tldr
+      npm install -g tldr
+
+      echo "tldr installed."
+    else
+      echo "is_install_tldr=false" >> ~/.config/dotfiles.ini
+      echo "tldr not install."
+    fi
+  fi
+fi

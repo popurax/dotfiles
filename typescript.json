@@ -30,5 +30,32 @@
 			"const keyEnums = recursive(listObject, targetKeys)",
 			"console.log(JSON.stringify(keyEnums, null, '\t'))",
 		]
+	},
+	"バックオフ関数": {
+		"description": "バックオフ関数　非同期",
+		"prefix": "backOffFn",
+		"body": [
+			// バックオフ関数
+			"const backOffFn = async (asyncFn: () => Promise<any>): Promise<any> => {",
+			"	let result",
+			"	try {",
+			"		result = await asyncFn()",
+			"	} catch (e) {",
+			"		logger.info('backOffFn エラーで取得失敗。リトライします。%s', String(e))",
+			"		await new Promise((res) => setTimeout(res, 5 * 1000))",
+			"		result = await backOffFn(asyncFn)",
+			"	}",
+			"	return result",
+			"}",
+		]
+	},
+	"非同期スリープ関数": {
+		"description": "非同期スリープ関数",
+		"prefix": "sleepFn",
+		"body": [
+      "const sleepFn = async (milliSecond: number) => {",
+      "  await new Promise((res) => setTimeout(res, milliSecond))",
+      "}",
+		]
 	}
 }
